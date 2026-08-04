@@ -1,5 +1,8 @@
+using EmployeeManagement.API.Data;
+using EmployeeManagement.API.DTOs;
 using EmployeeManagement.API.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace EmployeeManagement.API.Controllers;
 
@@ -7,37 +10,72 @@ namespace EmployeeManagement.API.Controllers;
 [Route("api/[controller]")]
 public class DepartmentsController : ControllerBase
 {
-    [HttpGet]
-    public IActionResult GetAll()
+    private readonly ApplicationDbContext _context;
+
+    public DepartmentsController(ApplicationDbContext context)
     {
-        return Ok(new[]
-        {
-            new Department { DepartmentId = 1, DepartmentName = "IT", Description = "Information Technology" },
-            new Department { DepartmentId = 2, DepartmentName = "HR", Description = "Human Resources" }
-        });
+        _context = context;
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        var departments = await _context.Departments.Include(d => d.Employees).ToListAsync();
+        return Ok(departments);
     }
 
     [HttpGet("{id:int}")]
-    public IActionResult GetById(int id)
+    public async Task<IActionResult> GetById(int id)
     {
-        return Ok(new Department { DepartmentId = id, DepartmentName = "IT", Description = "Information Technology" });
+        var department = await _context.Departments.Include(d => d.Employees).FirstOrDefaultAsync(d => d.DepartmentId == id);
+        if (department is null)
+        {
+            return NotFound(new { message = "Department not found" });
+        }
+
+        return Ok(department);
     }
 
     [HttpPost]
-    public IActionResult Create([FromBody] Department department)
+    public async Task<IActionResult> Create([FromBody] DepartmentCreateDto dto)
     {
-        return CreatedAtAction(nameof(GetById), new { id = 1 }, department);
+        var department = new Department
+        {
+            DepartmentName = dto.DepartmentName,
+            Description = dto.Description
+        };
+
+        _context.Departments.Add(department);
+        await _context.SaveChangesAsync();
+        return CreatedAtAction(nameof(GetById), new { id = department.DepartmentId }, department);
     }
 
     [HttpPut("{id:int}")]
-    public IActionResult Update(int id, [FromBody] Department department)
+    public async Task<IActionResult> Update(int id, [FromBody] DepartmentUpdateDto dto)
     {
+        var department = await _context.Departments.FindAsync(id);
+        if (department is null)
+        {
+            return NotFound(new { message = "Department not found" });
+        }
+
+        department.DepartmentName = dto.DepartmentName;
+        department.Description = dto.Description;
+        await _context.SaveChangesAsync();
         return Ok(department);
     }
 
     [HttpDelete("{id:int}")]
-    public IActionResult Delete(int id)
+    public async Task<IActionResult> Delete(int id)
     {
+        var department = await _context.Departments.FindAsync(id);
+        if (department is null)
+        {
+            return NotFound(new { message = "Department not found" });
+        }
+
+        _context.Departments.Remove(department);
+        await _context.SaveChangesAsync();
         return NoContent();
     }
 }
