@@ -3,6 +3,7 @@ using EmployeeManagement.API.Data;
 using EmployeeManagement.API.DTOs;
 using EmployeeManagement.API.Helpers;
 using EmployeeManagement.API.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
