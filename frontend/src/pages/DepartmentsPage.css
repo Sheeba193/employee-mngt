@@ -1,0 +1,87 @@
+.departments-page {
+  padding: 2rem 0;
+}
+
+.departments-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.dept-card {
+  background: white;
+  border-radius: 0.75rem;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.dept-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-4px);
+}
+
+.dept-card-header {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  padding: 1.5rem;
+}
+
+.dept-card-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.dept-card-body {
+  padding: 1.5rem;
+  flex: 1;
+}
+
+.dept-stat {
+  text-align: center;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--border);
+}
+
+.stat-value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-top: 0.25rem;
+}
+
+.dept-card-body p {
+  margin: 0.75rem 0;
+  font-size: 0.95rem;
+}
+
+.dept-card-body strong {
+  color: var(--text-primary);
+}
+
+.dept-card-footer {
+  padding: 1rem 1.5rem;
+  background: var(--bg-alt);
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 0.5rem;
+}
+
+.dept-card-footer button {
+  flex: 1;
+}
+
+@media (max-width: 768px) {
+  .departments-grid {
+    grid-template-columns: 1fr;
+  }
+}
