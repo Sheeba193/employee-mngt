@@ -43,14 +43,14 @@ function EmployeesPage() {
       {employees.length > 0 && (
         <div className="employees-grid">
           {employees.map((emp) => (
-            <div key={emp.employeeId} className="employee-card">
+            <div key={emp.id} className="employee-card">
               <div className="card-header">
                 <h3>{emp.firstName} {emp.lastName}</h3>
               </div>
               <div className="card-body">
                 <p><strong>Position:</strong> {emp.position}</p>
                 <p><strong>Email:</strong> {emp.email}</p>
-                <p><strong>Department:</strong> {emp.department?.departmentName || 'N/A'}</p>
+                <p><strong>Department:</strong> {emp.department || 'N/A'}</p>
                 <p><strong>Hire Date:</strong> {emp.hireDate ? new Date(emp.hireDate).toLocaleDateString() : 'N/A'}</p>
               </div>
               <div className="card-footer">
