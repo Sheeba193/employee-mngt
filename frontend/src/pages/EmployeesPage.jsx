@@ -24,6 +24,7 @@ function EmployeesPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState(null);
   const [form, setForm] = useState(initialForm);
+  const [fieldErrors, setFieldErrors] = useState({});
 
   async function loadEmployees() {
     const data = await apiRequest('/employees');
@@ -67,6 +68,7 @@ function EmployeesPage() {
   function resetForm() {
     setForm(initialForm);
     setEditingEmployee(null);
+    setFieldErrors({});
   }
 
   function openCreateModal() {
@@ -87,13 +89,37 @@ function EmployeesPage() {
       hireDate: employee.hireDate ? new Date(employee.hireDate).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10),
       departmentId: employee.departmentId ?? employee.department?.departmentId ?? '',
     });
+    setFieldErrors({});
     setIsModalOpen(true);
+  }
+
+  function updateField(field, value) {
+    setForm((current) => ({ ...current, [field]: value }));
+    setFieldErrors((current) => ({ ...current, [field]: '' }));
+  }
+
+  function validateForm() {
+    const errors = {};
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!form.firstName.trim()) errors.firstName = 'First name is required.';
+    if (!form.lastName.trim()) errors.lastName = 'Last name is required.';
+    if (!form.email.trim()) errors.email = 'Email is required.';
+    else if (!emailPattern.test(form.email.trim())) errors.email = 'Enter a valid email address.';
+    if (form.salary === '') errors.salary = 'Salary is required.';
+    else if (Number(form.salary) < 0) errors.salary = 'Salary cannot be negative.';
+    if (!form.hireDate) errors.hireDate = 'Hire date is required.';
+    if (!form.departmentId) errors.departmentId = 'Select a department.';
+
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
   }
 
   async function handleSubmit(e) {
     e.preventDefault();
     setError(null);
     setSuccess(null);
+    if (!validateForm()) return;
     setSaving(true);
 
     try {
@@ -108,10 +134,6 @@ function EmployeesPage() {
         hireDate: new Date(form.hireDate).toISOString(),
         departmentId: Number(form.departmentId),
       };
-
-      if (!payload.firstName || !payload.lastName || !payload.email || !payload.departmentId) {
-        throw new Error('First name, last name, email, and department are required.');
-      }
 
       if (editingEmployee) {
         await apiRequest(`/employees/${editingEmployee.employeeId}`, {
@@ -225,16 +247,20 @@ function EmployeesPage() {
                   <input
                     id="firstName"
                     value={form.firstName}
-                    onChange={(e) => setForm({ ...form, firstName: e.target.value })}
+                    onChange={(e) => updateField('firstName', e.target.value)}
+                    required
                   />
+                  {fieldErrors.firstName && <span className="field-error">{fieldErrors.firstName}</span>}
                 </div>
                 <div className="form-group">
                   <label htmlFor="lastName">Last name</label>
                   <input
                     id="lastName"
                     value={form.lastName}
-                    onChange={(e) => setForm({ ...form, lastName: e.target.value })}
+                    onChange={(e) => updateField('lastName', e.target.value)}
+                    required
                   />
+                  {fieldErrors.lastName && <span className="field-error">{fieldErrors.lastName}</span>}
                 </div>
               </div>
 
@@ -245,15 +271,17 @@ function EmployeesPage() {
                     id="email"
                     type="email"
                     value={form.email}
-                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                    onChange={(e) => updateField('email', e.target.value)}
+                    required
                   />
+                  {fieldErrors.email && <span className="field-error">{fieldErrors.email}</span>}
                 </div>
                 <div className="form-group">
                   <label htmlFor="phone">Phone</label>
                   <input
                     id="phone"
                     value={form.phone}
-                    onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                    onChange={(e) => updateField('phone', e.target.value)}
                   />
                 </div>
               </div>
@@ -264,7 +292,7 @@ function EmployeesPage() {
                   <select
                     id="gender"
                     value={form.gender}
-                    onChange={(e) => setForm({ ...form, gender: e.target.value })}
+                    onChange={(e) => updateField('gender', e.target.value)}
                   >
                     <option value="">Select</option>
                     <option value="Male">Male</option>
@@ -277,7 +305,8 @@ function EmployeesPage() {
                   <select
                     id="departmentId"
                     value={form.departmentId}
-                    onChange={(e) => setForm({ ...form, departmentId: e.target.value })}
+                    onChange={(e) => updateField('departmentId', e.target.value)}
+                    required
                   >
                     <option value="">Select department</option>
                     {departments.map((dept) => (
@@ -286,6 +315,7 @@ function EmployeesPage() {
                       </option>
                     ))}
                   </select>
+                  {fieldErrors.departmentId && <span className="field-error">{fieldErrors.departmentId}</span>}
                 </div>
               </div>
 
@@ -295,7 +325,7 @@ function EmployeesPage() {
                   <input
                     id="position"
                     value={form.position}
-                    onChange={(e) => setForm({ ...form, position: e.target.value })}
+                    onChange={(e) => updateField('position', e.target.value)}
                   />
                 </div>
                 <div className="form-group">
@@ -306,8 +336,10 @@ function EmployeesPage() {
                     min="0"
                     step="1000"
                     value={form.salary}
-                    onChange={(e) => setForm({ ...form, salary: e.target.value })}
+                    onChange={(e) => updateField('salary', e.target.value)}
+                    required
                   />
+                  {fieldErrors.salary && <span className="field-error">{fieldErrors.salary}</span>}
                 </div>
               </div>
 
@@ -317,8 +349,10 @@ function EmployeesPage() {
                   id="hireDate"
                   type="date"
                   value={form.hireDate}
-                  onChange={(e) => setForm({ ...form, hireDate: e.target.value })}
+                  onChange={(e) => updateField('hireDate', e.target.value)}
+                  required
                 />
+                {fieldErrors.hireDate && <span className="field-error">{fieldErrors.hireDate}</span>}
               </div>
 
               <div className="modal-actions">
