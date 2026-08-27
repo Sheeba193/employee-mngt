@@ -16,6 +16,7 @@ function DepartmentsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingDepartment, setEditingDepartment] = useState(null);
   const [form, setForm] = useState(initialForm);
+  const [fieldErrors, setFieldErrors] = useState({});
 
   async function loadDepartments() {
     const data = await apiRequest('/departments');
@@ -47,6 +48,7 @@ function DepartmentsPage() {
   function resetForm() {
     setForm(initialForm);
     setEditingDepartment(null);
+    setFieldErrors({});
   }
 
   function openCreateModal() {
@@ -60,13 +62,29 @@ function DepartmentsPage() {
       departmentName: department.departmentName || '',
       description: department.description || '',
     });
+    setFieldErrors({});
     setIsModalOpen(true);
+  }
+
+  function updateField(field, value) {
+    setForm((current) => ({ ...current, [field]: value }));
+    setFieldErrors((current) => ({ ...current, [field]: '' }));
+  }
+
+  function validateForm() {
+    const errors = {};
+    if (!form.departmentName.trim()) errors.departmentName = 'Department name is required.';
+    else if (form.departmentName.trim().length < 2) errors.departmentName = 'Use at least 2 characters.';
+
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
   }
 
   async function handleSubmit(e) {
     e.preventDefault();
     setError(null);
     setSuccess(null);
+    if (!validateForm()) return;
     setSaving(true);
 
     try {
@@ -74,10 +92,6 @@ function DepartmentsPage() {
         departmentName: form.departmentName.trim(),
         description: form.description.trim(),
       };
-
-      if (!payload.departmentName) {
-        throw new Error('Department name is required.');
-      }
 
       if (editingDepartment) {
         await apiRequest(`/departments/${editingDepartment.departmentId}`, {
@@ -193,8 +207,10 @@ function DepartmentsPage() {
                 <input
                   id="departmentName"
                   value={form.departmentName}
-                  onChange={(e) => setForm({ ...form, departmentName: e.target.value })}
+                  onChange={(e) => updateField('departmentName', e.target.value)}
+                  required
                 />
+                {fieldErrors.departmentName && <span className="field-error">{fieldErrors.departmentName}</span>}
               </div>
 
               <div className="form-group">
@@ -203,7 +219,7 @@ function DepartmentsPage() {
                   id="description"
                   rows="4"
                   value={form.description}
-                  onChange={(e) => setForm({ ...form, description: e.target.value })}
+                  onChange={(e) => updateField('description', e.target.value)}
                 />
               </div>
 

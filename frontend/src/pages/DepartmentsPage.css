@@ -158,6 +158,17 @@
   padding: 1.5rem;
 }
 
+.field-error {
+  display: block;
+  margin-top: 0.35rem;
+  color: var(--danger);
+  font-size: 0.8rem;
+}
+
+.form-group input:invalid {
+  border-color: var(--danger);
+}
+
 .modal-actions {
   display: flex;
   justify-content: flex-end;
