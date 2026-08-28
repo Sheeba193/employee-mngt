@@ -19,6 +19,10 @@
   margin-top: 2rem;
 }
 
+.departments-page .table-shell {
+  margin-top: 0.5rem;
+}
+
 .dept-card {
   background: white;
   border-radius: 0.75rem;

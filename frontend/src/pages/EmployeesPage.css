@@ -61,6 +61,10 @@
   gap: 1.5rem;
 }
 
+.employees-page .table-shell {
+  margin-top: 0.5rem;
+}
+
 .employee-card {
   background: white;
   border-radius: 0.75rem;
