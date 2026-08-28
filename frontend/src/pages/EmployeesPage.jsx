@@ -202,31 +202,49 @@ function EmployeesPage() {
       )}
 
       {employees.length > 0 && (
-        <div className="employees-grid">
-          {employees.map((emp) => (
-            <div key={emp.employeeId} className="employee-card">
-              <div className="card-header">
-                <h3>
-                  {emp.firstName} {emp.lastName}
-                </h3>
-              </div>
-              <div className="card-body">
-                <p><strong>Position:</strong> {emp.position || 'N/A'}</p>
-                <p><strong>Email:</strong> {emp.email || 'N/A'}</p>
-                <p><strong>Department:</strong> {emp.department?.departmentName || 'N/A'}</p>
-                <p><strong>Salary:</strong> {emp.salary != null ? `$${Number(emp.salary).toLocaleString()}` : 'N/A'}</p>
-                <p><strong>Hire Date:</strong> {emp.hireDate ? new Date(emp.hireDate).toLocaleDateString() : 'N/A'}</p>
-              </div>
-              <div className="card-footer">
-                <button className="btn-primary btn-small" type="button" onClick={() => openEditModal(emp)}>
-                  Edit
-                </button>
-                <button className="btn-danger btn-small" type="button" onClick={() => handleDelete(emp)}>
-                  Delete
-                </button>
-              </div>
-            </div>
-          ))}
+        <div className="table-shell">
+          <table className="data-table">
+            <caption className="sr-only">Employee directory</caption>
+            <thead>
+              <tr>
+                <th scope="col">Employee</th>
+                <th scope="col">Position</th>
+                <th scope="col">Department</th>
+                <th scope="col">Email</th>
+                <th scope="col">Hire date</th>
+                <th scope="col" className="actions-column">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {employees.map((emp) => (
+                <tr key={emp.employeeId}>
+                  <td data-label="Employee">
+                    <div className="person-cell">
+                      <span className="person-avatar" aria-hidden="true">
+                        {`${emp.firstName?.[0] || ''}${emp.lastName?.[0] || ''}`.toUpperCase()}
+                      </span>
+                      <div>
+                        <strong>{emp.firstName} {emp.lastName}</strong>
+                        <span className="muted-text">#{emp.employeeId}</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td data-label="Position">{emp.position || 'N/A'}</td>
+                  <td data-label="Department"><span className="table-badge">{emp.department?.departmentName || 'Unassigned'}</span></td>
+                  <td data-label="Email">{emp.email || 'N/A'}</td>
+                  <td data-label="Hire date">{emp.hireDate ? new Date(emp.hireDate).toLocaleDateString() : 'N/A'}</td>
+                  <td data-label="Actions" className="row-actions">
+                    <button className="btn-secondary btn-small" type="button" onClick={() => openEditModal(emp)}>
+                      Edit
+                    </button>
+                    <button className="btn-danger btn-small" type="button" onClick={() => handleDelete(emp)}>
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
 

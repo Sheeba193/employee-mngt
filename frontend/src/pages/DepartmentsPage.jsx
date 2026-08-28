@@ -155,39 +155,49 @@ function DepartmentsPage() {
       )}
 
       {!loading && departments.length > 0 && (
-        <div className="departments-grid">
-          {departments.map((department) => {
-            const employeeCount = department.employees?.length || 0;
+        <div className="table-shell">
+          <table className="data-table">
+            <caption className="sr-only">Department directory</caption>
+            <thead>
+              <tr>
+                <th scope="col">Department</th>
+                <th scope="col">Description</th>
+                <th scope="col">Employees</th>
+                <th scope="col" className="actions-column">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {departments.map((department) => {
+                const employeeCount = department.employees?.length || 0;
 
-            return (
-              <article key={department.departmentId} className="dept-card">
-                <div className="dept-card-header">
-                  <span className="dept-mark" aria-hidden="true">
-                    {department.departmentName?.charAt(0)?.toUpperCase() || 'D'}
-                  </span>
-                  <div>
-                    <h2>{department.departmentName}</h2>
-                    <span className="dept-id">Department #{department.departmentId}</span>
-                  </div>
-                </div>
-                <div className="dept-card-body">
-                  <p className="dept-description">{department.description || 'No description provided.'}</p>
-                  <div className="dept-stat">
-                    <span className="stat-value">{employeeCount}</span>
-                    <span className="stat-label">{employeeCount === 1 ? 'employee' : 'employees'}</span>
-                  </div>
-                </div>
-                <div className="dept-card-footer">
-                  <button type="button" className="btn-primary btn-small" onClick={() => openEditModal(department)}>
-                    Edit
-                  </button>
-                  <button type="button" className="btn-danger btn-small" onClick={() => handleDelete(department)}>
-                    Delete
-                  </button>
-                </div>
-              </article>
-            );
-          })}
+                return (
+                  <tr key={department.departmentId}>
+                    <td data-label="Department">
+                      <div className="person-cell">
+                        <span className="person-avatar department-avatar" aria-hidden="true">
+                          {department.departmentName?.charAt(0)?.toUpperCase() || 'D'}
+                        </span>
+                        <div>
+                          <strong>{department.departmentName}</strong>
+                          <span className="muted-text">#{department.departmentId}</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td data-label="Description">{department.description || 'No description provided.'}</td>
+                    <td data-label="Employees"><span className="table-badge">{employeeCount}</span></td>
+                    <td data-label="Actions" className="row-actions">
+                      <button type="button" className="btn-secondary btn-small" onClick={() => openEditModal(department)}>
+                        Edit
+                      </button>
+                      <button type="button" className="btn-danger btn-small" onClick={() => handleDelete(department)}>
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       )}
 
