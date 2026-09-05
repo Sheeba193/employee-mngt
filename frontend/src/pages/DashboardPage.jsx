@@ -11,32 +11,9 @@ function DashboardPage() {
     let mounted = true;
     async function load() {
       try {
-        const [employeesResponse, departmentsResponse] = await Promise.all([
-          apiRequest('/employees'),
-          apiRequest('/departments'),
-        ]);
-
-        const employees = Array.isArray(employeesResponse)
-          ? employeesResponse
-          : employeesResponse?.data || [];
-        const departments = Array.isArray(departmentsResponse)
-          ? departmentsResponse
-          : departmentsResponse?.data || [];
-
-        const totalEmployees = employees.length;
-        const totalDepartments = departments.length;
-        const totalPayroll = employees.reduce((sum, emp) => sum + (Number(emp.salary) || 0), 0);
-        const averageSalary = totalEmployees > 0 ? totalPayroll / totalEmployees : 0;
-
-        const data = {
-          totalEmployees,
-          totalDepartments,
-          totalPayroll,
-          averageSalary,
-        };
-
+        const data = await apiRequest('/dashboard');
         if (mounted) {
-          setStats(data);
+          setStats(data || { totalEmployees: 0, totalDepartments: 0 });
           setError(null);
         }
       } catch (err) {
@@ -51,10 +28,7 @@ function DashboardPage() {
 
   return (
     <div className="dashboard-page">
-      <div className="dashboard-header">
-        <p className="eyebrow">Overview</p>
-        <h1>Dashboard</h1>
-      </div>
+      <h1>📊 Dashboard</h1>
 
       {loading && <div className="loading">Loading dashboard...</div>}
       {error && <div className="alert alert-error">{error}</div>}
@@ -64,11 +38,11 @@ function DashboardPage() {
           <div className="stats-grid">
             <div className="stat-card">
               <div className="stat-icon" style={{ backgroundColor: '#dbeafe' }}>
-                👥
+                👨‍💼
               </div>
               <div className="stat-content">
                 <div className="stat-value">{stats.totalEmployees}</div>
-                <div className="stat-label">Employees</div>
+                <div className="stat-label">Total Employees</div>
               </div>
             </div>
 
@@ -84,21 +58,11 @@ function DashboardPage() {
 
             <div className="stat-card">
               <div className="stat-icon" style={{ backgroundColor: '#fef3c7' }}>
-                💰
+                ⚙️
               </div>
               <div className="stat-content">
-                <div className="stat-value">${(stats.totalPayroll / 1_000_000).toFixed(1)}M</div>
-                <div className="stat-label">Total Payroll</div>
-              </div>
-            </div>
-
-            <div className="stat-card">
-              <div className="stat-icon" style={{ backgroundColor: '#fecaca' }}>
-                📊
-              </div>
-              <div className="stat-content">
-                <div className="stat-value">${(stats.averageSalary / 1000).toFixed(0)}K</div>
-                <div className="stat-label">Avg Salary</div>
+                <div className="stat-value">Active</div>
+                <div className="stat-label">System Status</div>
               </div>
             </div>
           </div>
